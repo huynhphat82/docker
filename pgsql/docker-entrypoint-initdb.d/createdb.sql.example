@@ -1,0 +1,23 @@
+###
+### Copy createdb.sql.example to createdb.sql
+### then uncomment then set database name and username to create you need databases
+#
+# example: .env MYSQL_USER=root and need db name is pptv_fds
+#
+#    CREATE DATABASE IF NOT EXISTS `laravel` ;
+#    GRANT ALL ON `laravel`.* TO 'root'@'%' ;
+#
+###
+### this sql script is auto run when mariadb container start and $DATA_PATH_HOST/mariadb not exists.
+###
+### if your $DATA_PATH_HOST/mariadb is exists and you do not want to delete it, you can run by manual execution:
+###
+###     docker-compose exec mariadb bash
+###     mysql_secure_installation
+###     mysql -u root -p < /docker-entrypoint-initdb.d/createdb.sql
+###
+
+CREATE DATABASE IF NOT EXISTS `laravel` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;
+FLUSH PRIVILEGES;

@@ -1,0 +1,134 @@
+version: '3'
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  #################### APPLICATION (WEB) ####################
+  app:
+    build: ./app
+    environment:
+      APP_ENV: '${APP_ENV}'
+      APP_DEBUG: '${APP_DEBUG}'
+      LOG_CHANNEL: '${LOG_CHANNEL}'
+    volumes:
+      - ${PROJECT_PATH}/:/var/www
+      - ${PROJECT_PATH}/${PROJECT_FOLDER}:/var/www/${PROJECT_FOLDER}
+      - ${PROJECT_PATH}/${PROJECT_FOLDER}/storage:/var/www/${PROJECT_FOLDER}/storage
+      - ${PROJECT_PATH}/${PROJECT_FOLDER}/node_modules:/var/www/${PROJECT_FOLDER}/node_modules
+    expose:
+      - 9000
+    networks:
+      - backend
+  #################### MAILDEV ####################
+  maildev:
+    build: ./maildev
+    # env_file: .env
+    # environment: 
+    # container_name: maildev
+    # volumes: 
+    ports:
+      - '1080:80'
+      - '1025:25'
+    networks: 
+      - backend
+    stdin_open: true
+    tty: true
+  #################### REDIS ####################
+  redis:
+    build: ./redis
+    volumes:
+      - './redis/data:/data'
+    ports:
+      - 6379:6379
+    networks: 
+      - backend
+    stdin_open: true
+    tty: true
+  #################### S3 ####################
+  s3:
+    build: ./s3
+    environment: 
+      - MINIO_ROOT_USER=$MINIO_ROOT_USER
+      - MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD
+    volumes:
+      - './s3/data:/data'
+    ports:
+      - 9000:9000
+    networks: 
+      - backend
+    stdin_open: true
+    tty: true
+  #################### S3 BUCKET ####################
+  s3bucket:
+    build: ./s3bucket
+    volumes:
+      - './s3bucket/data:/data'
+    networks: 
+      - backend
+    depends_on: 
+      - s3
+    stdin_open: true
+    tty: true
+  #################### AWS SQS ####################
+  sqs:
+    build: ./sqs
+    volumes:
+      - './sqs/opt/elasticmq.conf:/opt/elasticmq.conf'
+    ports:
+      - "9324:9324"
+      - "9325:9325"
+    networks: 
+      - backend
+    stdin_open: true
+    tty: true
+  #################### PGSQL ####################
+  pgsql:
+    build: ./pgsql
+    environment:
+      TZ: '${APP_TZ}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: '${DB_DATABASE}'
+    volumes:
+      - ./pgsql:/var/lib/postgresql/data
+      - ./pgsql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+    networks:
+      - backend
+  #################### NGNIX ####################
+  nginx:
+    build:
+      context: ./nginx
+      args:
+        APP_URL: '${APP_URL}'
+    ports:
+      - 8000:8000
+      - 8001:8001
+      - 9326:9326
+    volumes:
+      - ../sourcecode/public:/var/www/sourcecode/public
+      - ../sourcecode/storage/app/public:/var/www/sourcecode/public/storage
+    links:
+      - app
+      - s3
+      - sqs
+    networks:
+      - backend
+  #################### JENKINS ####################
+  jenkins:
+    build: ./jenkins
+    volumes:
+      - ./jenkins:/var/www/jenkins
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"
+      - "9090:9090"
+    networks:
+      - backend
+volumes: 
+  redis_data:
+    driver: local

@@ -18,3 +18,5 @@ bin-release/
 # information for Eclipse / Flash Builder.
 
 /.history
+redis/data
+s3/data

@@ -7,11 +7,15 @@ networks:
 services:
   #################### APPLICATION (WEB) ####################
   app:
-    build: ./app
+    build: 
+      context: ./app
+      # Pass env variables from docker-compose.yml to Dockefile
+      args: 
+        - PROJECT_FOLDER=${PROJECT_FOLDER}
     environment:
-      APP_ENV: '${APP_ENV}'
-      APP_DEBUG: '${APP_DEBUG}'
-      LOG_CHANNEL: '${LOG_CHANNEL}'
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      LOG_CHANNEL: ${LOG_CHANNEL}
     volumes:
       - ${PROJECT_PATH}/:/var/www
       - ${PROJECT_PATH}/${PROJECT_FOLDER}:/var/www/${PROJECT_FOLDER}

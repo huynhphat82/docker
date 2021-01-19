@@ -1,5 +1,8 @@
 FROM php:7.3-fpm
 
+ARG PROJECT_FOLDER
+ENV PROJECT_FOLDER $PROJECT_FOLDER
+
 ENV TZ UTC
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
@@ -51,6 +54,5 @@ RUN apt-get install -y dos2unix
 
 # Change owner
 RUN chown www-data:www-data -R ./
-
 # Work directory
-WORKDIR /var/www/lar7-research
+WORKDIR /var/www/${PROJECT_FOLDER}

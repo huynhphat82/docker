@@ -1,0 +1,40 @@
+store:
+  name: "sql"
+  sql:
+    driver: "mysql"
+    dsn: "smsender_user:smsender_password@tcp(db_sms:3306)/smsender?parseTime=true&loc=Local"
+    connection:
+      maxOpenConns: 100
+      maxIdleConns: 50
+http:
+  enable: true
+  siteURL: "http://127.0.0.1:8080"
+  addr: ":8080"
+  tls: false
+  tlsCertFile: ""
+  tlsKeyFile: ""
+  api:
+    cors:
+      enable: false
+      origins:
+        - # "http://127.0.0.1:8080"
+      headers:
+        - "*"
+      methods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "PATCH"
+        - "DELETE"
+      debug: false
+  web:
+    enable: true
+worker:
+  num: 100
+providers:
+  dummy:
+  nexmo:
+    key: "NEXMO_KEY"
+    secret: "NEXMO_SECRET"
+    webhook:
+      enable: true

@@ -1,0 +1,47 @@
+{
+    "store": {
+        "name": "sql",
+        "sql": {
+            "driver": "mysql",
+            "dsn": "user:password@tcp(localhost:3306)/dbname?parseTime=true&loc=Local",
+            "connection": {
+                "maxOpenConns": 100,
+                "maxIdleConns": 50
+            }
+        }
+    },
+    "http": {
+        "enable": true,
+        "siteURL": "",
+        "addr": ":8080",
+        "tls": false,
+        "tlsCertFile": "",
+        "tlsKeyFile": "",
+        "api": {
+            "cors": {
+                "enable": false,
+                "origins": [],
+                "headers": [
+                    "*"
+                ],
+                "methods": [
+                    "GET",
+                    "POST",
+                    "PUT",
+                    "PATCH",
+                    "DELETE"
+                ],
+                "debug": false
+            }
+        },
+        "web": {
+            "enable": true
+        }
+    },
+    "worker": {
+        "num": 100
+    },
+    "providers": {
+        "dummy": {}
+    }
+}
